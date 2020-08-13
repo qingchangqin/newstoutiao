@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Add new post &laquo; Admin</title>
+  <link rel="stylesheet" href="/public/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/public/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/public/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <script src="/public/vendors/nprogress/nprogress.js"></script>
+</head>
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="main">
+    <nav class="navbar">
+      <button class="btn btn-default navbar-btn fa fa-bars"></button>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/profile"><i class="fa fa-user"></i>个人中心</a></li>
+        <li><a href="/loginOut"><i class="fa fa-sign-out"></i>退出</a></li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="page-title">
+        <h1>写文章</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <form class="row">
+        <div class="col-md-9">
+          <div class="form-group">
+            <label for="title">标题</label>
+            <input id="title" class="form-control input-lg" name="title" type="text" placeholder="文章标题">
+          </div>
+          <div class="form-group">
+            <label for="content">标题</label>
+            <textarea id="content" class="form-control input-lg" name="content" cols="30" rows="10" placeholder="内容"></textarea>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="feature">特色图像</label>
+            <!-- show when image chose -->
+            <img class="help-block thumbnail" id="ImgPath" style="display: none;">
+            <input id="feature" class="form-control"  type="file">
+            <input type="hidden" value="" name="feature">
+          </div>
+          <div class="form-group">
+            <label for="category">所属分类</label>
+            <select id="category" class="form-control" name="category">
+              {{each catData}}
+              <option value="{{$value.cat_id}}">{{$value.cat_name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="created">发布时间</label>
+            <input id="created" class="form-control" name="created" type="text">
+          </div>
+          <div class="form-group">
+            <label for="status">状态</label>
+            <select id="status" class="form-control" name="status">
+              {{each status}}
+                <option value="{{$value.key}}">{{$value.text}}</option>
+               {{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <button id="savePost" class="btn btn-primary" type="button">保存</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+ 
+  <div class="aside">
+    <div class="profile">
+      <img class="avatar" src="{{photo}}">
+      <h3 class="name">{{nickname}}</h3>
+    </div>
+    <ul class="nav">
+      <li>
+        <a href="/"><i class="fa fa-dashboard"></i>仪表盘</a>
+      </li>
+      <li class="active">
+        <a href="#menu-posts" data-toggle="collapse">
+          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-posts" class="collapse in">
+          <li><a href="/posts">所有文章</a></li>
+          <li class="active"><a href="/post-add">写文章</a></li>
+          <li><a href="/categories">分类目录</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="/comments"><i class="fa fa-comments"></i>评论</a>
+      </li>
+      <li>
+        <a href="/users"><i class="fa fa-users"></i>用户</a>
+      </li>
+      <li>
+        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-settings" class="collapse">
+          <li><a href="/nav-menus">导航菜单</a></li>
+          <li><a href="/slides">图片轮播</a></li>
+          
+        </ul>
+      </li>
+    </ul>
+  </div>
+ 
+
+  <script src="/public/vendors/jquery/jquery.js"></script>
+  <script src="/public/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/public/vendors/laydate/laydate.js"></script>
+  <script src="/public/vendors/layui/layui.all.js"></script>
+  <script>NProgress.done()</script>
+</body>
+<script>
+    $(function(){
+       // 初始化时间
+       laydate.render({
+        elem: '#created', //指定元素
+        type: "datetime"
+      });
+
+      $("#feature").change(function(){
+          //判断是否有选择文件
+          if(this.files.length == 0){
+            return;
+          }
+          //获取文件二进制数据
+          let file = this.files[0];
+          //追加二进制流数据
+          var formData = new FormData();
+          //追加
+          formData.append("feature",file);
+
+          $.ajax({
+            url:"/uploadFeature",
+            data:formData,
+            type:"post",
+            processData: false, // 将数据转换成对象，不对数据做处理，故 processData: false 
+　　　　     contentType: false,    // 不设置数据类型
+          }).then(data =>{
+            console.log(data);
+            $("#ImgPath").attr("src",data.fullPath);
+            $("#ImgPath").css("display","block"); 
+            $("input[name=feature]").val(data.fullPath);
+          });
+      })
+
+      //添加文章
+      $("#savePost").click(function(){
+        var formData = $("form").serialize();
+        //禁用按钮
+        $(this).prop("disabled",true).html("保存中。。。");
+        $.post("/savePost",formData,(res)=>{
+            if(res.code == 200){
+              layer.msg("添加成功",{
+                icon:1,
+                time:2000
+              });
+              //添加成功后返回文章页面
+              location.href = "/posts";
+            }
+            //解除禁用
+            $(this).prop('disabled',false).html('保存');
+        });
+      })
+     
+    })
+</script>
+</html>

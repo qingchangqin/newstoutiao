@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Categories &laquo; Admin</title>
+  <link rel="stylesheet" href="/public/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/public/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/public/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/public/vendors/layui/css/layui.css">
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <script src="/public/vendors/nprogress/nprogress.js"></script>
+  <style>
+    
+
+    .margin {
+      margin-left: 30px;
+    }
+
+    #editCat{
+      margin-top: 30px;
+    }
+
+
+  </style>
+</head>
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="main">
+    <nav class="navbar">
+      <button class="btn btn-default navbar-btn fa fa-bars"></button>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/profile"><i class="fa fa-user"></i>个人中心</a></li>
+        <li><a href="/loginOut"><i class="fa fa-sign-out"></i>退出</a></li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="page-title">
+        <h1>分类目录</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <div class="row">
+        <div class="col-md-4">
+          <form id="insert">
+            <h2>添加新分类目录</h2>
+            <div class="form-group">
+              <label for="name">名称</label>
+              <input id="name" class="form-control" name="name" type="text" placeholder="分类名称">
+            </div>
+            <div class="form-group">
+              <label for="slug">类名</label>
+              <input id="slug" class="form-control" name="className" type="text" placeholder="classname">
+            </div>
+            <div class="form-group">
+              <button id="classBtn" class="btn btn-primary" type="button">添加</button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-8" id="banner">
+          <div class="page-action">
+            <!-- show when multiple checked -->
+            <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+          </div>
+          <table class="table table-striped table-bordered table-hover">
+            <thead>
+              <tr>
+                <th class="text-center" width="40"><input id="checkbox" type="checkbox"></th>
+                <th>名称</th>
+                <th>类名</th>
+                <th class="text-center" width="100">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td>未分类</td>
+                <td>fa-fire</td>
+                <td class="text-center">
+                  <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td>奇趣事</td>
+                <td>fa-fire</td>
+                <td class="text-center">
+                  <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td>奇趣事</td>
+                <td>fa-fire</td>
+                <td class="text-center">
+                  <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="pagination" style=" position: absolute;left: 230px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="editCat" class="layui-form model-input" style="display: none;">
+    <input type="hidden" name="editId" id="editId">
+    <div class="layui-form-item ">
+        <label class="layui-form-label">标题</label>
+        <div class="layui-input-inline margin">
+            <input type="text" id="editName" name="editName" required lay-verify="required" placeholder="请输入分类名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">内容</label>
+        <div class="layui-input-block right">
+          <textarea name="editClass" required lay-verify="required" placeholder="请输入类名" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block ">
+            <button class="layui-btn model-sub" lay-submit lay-filter="editCatSub">立即提交</button>
+        </div>
+    </div>
+  </div>
+
+  <div class="aside">
+    <div class="profile">
+      <img class="avatar" src="{{photo}}">
+      <h3 class="name">{{nickname}}</h3>
+    </div>
+    <ul class="nav">
+      <li>
+        <a href="/index"><i class="fa fa-dashboard"></i>仪表盘</a>
+      </li>
+      <li class="active">
+        <a href="#menu-posts" data-toggle="collapse">
+          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-posts" class="collapse in">
+          <li><a href="/posts">所有文章</a></li>
+          <li><a href="/post-add">写文章</a></li>
+          <li class="active"><a href="/categories">分类目录</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="/comments"><i class="fa fa-comments"></i>评论</a>
+      </li>
+      <li>
+        <a href="/users"><i class="fa fa-users"></i>用户</a>
+      </li>
+      <li>
+        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-settings" class="collapse">
+          <li><a href="/nav-menus">导航菜单</a></li>
+          <li><a href="/slides">图片轮播</a></li>
+          
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <script src="/public/vendors/jquery/jquery-3.5.1.js"></script>
+  <script src="/public/vendors/layui/layui.js"></script>
+  <script src="/public/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/public/vendors/jquery/moment.js"></script>
+  <script src="/public/vendors/jquery/jquery.twbsPagination.js"></script>
+  <script>NProgress.done()</script>
+</body>
+<script >
+  var tempIndex = 1;
+    $(function(){
+
+      //新增分类表数据
+      $("#classBtn").click(function(){
+        //序列化表单数据
+        let form = $("#insert").serialize(); 
+        //禁用按钮
+        $(this).prop("disabled",true).html("保存中。。。");
+        $.post("/addCat",form,function(res){
+            if(res.code == 200){
+              layer.msg("添加成功",{
+                icon:1,
+                time:2000
+              });
+              $('#pagination').remove();
+              $('#banner').append('<div id="pagination" style=" position: absolute;left: 230px;"></div>');
+              getPage(true);
+            }
+            
+        });
+         //解除禁用
+         $(this).prop("disabled",false).html("添加");
+      })
+      
+      //将数据拼接到表格中
+      var currentPage = 0;
+      function renderTbody(data){
+        let tbody = ``;
+        var index = 1;
+        console.log(data);
+        //循环拼接
+        data.forEach((obj)=>{
+            tbody += `
+            <tr>
+              <td class="text-center"><input type="checkbox"></td>
+              <input type="hidden" id="id" value="${obj.cat_id}">
+              <td id="catName">${obj.cat_name}</td>
+              <td id="className">${obj.classname}</td>
+              <td class="text-center">
+                <a href="javascript:;" class="btn btn-info btn-xs">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+              </td>
+           </tr>
+          `
+        })
+        return tbody;
+      }
+      //分页
+        function renderPage(totalPage,bool){
+          $("#pagination").twbsPagination({
+              totalPages: totalPage, // 分页的总页数
+              visiblePages: 5, // 展示的页码数
+              initiateStartPageClick: true, // 默认单击一次回调函数
+              first: '第一页',
+              prev: '上一页',
+              next: '下一页',
+              last: '最后一页',
+              onPageClick: function (event, page) {
+                $(".page-item").text();
+                  if(!bool){
+                    currentPage = page;
+                    console.log(currentPage);
+                    renderData(currentPage);
+                  }else {
+                    //每次点击页码都获取新的数据
+                    renderData(currentPage);
+                    //删除所有高亮的页码按钮
+                    
+                    $(".page-item").removeClass("active");
+                    bool = false;
+                    let arr = document.querySelectorAll(".page-item");
+                    //重载页面时将当前页码按钮高亮
+                    for(let i = 0;i<arr.length;i++){
+                      if(arr[i].innerText == currentPage){
+                          arr[i].classList.add("active");
+                      }
+                    }
+                  }
+                  
+                 
+              }
+          });
+        }
+      
+      function renderData(page){
+        document.getElementById("checkbox").checked = false;
+          $.get("/getCatPageData",{page:page},function(res){
+            let tHtml = renderTbody(res.data);
+            $("tbody").html(tHtml);
+        });
+      }
+      //获取总页数
+      function getPage(bool){
+        $.get("/getCatPageCount",function(res){
+          renderPage(res.totalPage,bool);
+        });  
+      }
+     
+      getPage(false);
+      //全选按钮
+      $("#checkbox").change(function(){
+          if(this.checked){
+            $("input[type=checkbox]").attr("checked",true);
+          }else{
+            $("input[type=checkbox]").attr("checked",false);
+          }
+      })
+
+      layui.use(['layer',"form"], function(){
+        var layer = layui.layer;
+        var form = layui.form;
+          let editIndex;
+          //  
+          $("tbody").on("click","a",function(){
+            let log =  $(this).html();
+
+            if(log == "编辑"){
+
+              // 获取当前行的数据
+              let tr = $(this).parent().parent();
+              let title = tr.children("#catName").html();
+              let content = tr.children("#className").html();
+              let id = tr.children("#id").val();
+
+
+              $("#editId").val(id);
+              $("input[name=editName]").val(title);
+              $("textarea[name=editClass]").val(content);
+              // //打开修改弹框
+              editIndex = layer.open({
+                title: "编辑分类信息",
+                type: 1,
+                content: $("#editCat"),
+                area: ['600px', '300px']
+              })
+            }else{
+              //事件委托绑定删除按钮
+                let tr = $(this).parent().parent();
+                let id = tr.children("#id").val();
+                
+                //发送删除请求
+                $.get("/delCat",{id:id},function(data){
+                    if(data.code == 200){
+                        tr.remove();
+                        layer.msg("删除成功",{icon:1});
+                        $('#pagination').remove();
+                        $('#banner').append('<div id="pagination" style=" position: absolute;left: 230px;"></div>');
+                        getPage(true);
+                    }else {
+                        layer.msg("删除失败",{icon:2});
+                    }
+                });
+            }
+           
+          })
+
+          //监听修改按钮
+          form.on("submit(editCatSub)",function(){
+              var params = {
+                  id: $("#editId").val(),
+                  name: $("input[name=editName]").val(),
+                  className: $("textarea[name=editClass]").val()
+              }
+              console.log(params);
+
+              //发送请求修改文章
+              $.ajax({
+                  url:"/updCat",
+                  type:"post",
+                  dataType:"json",
+                  contentType:"application/json",
+                  data: JSON.stringify(params) 
+              }).then(data =>{
+                  layer.close(editIndex);
+                  if(data.code == 200){
+                    layer.msg("修改成功",{icon: 1});
+                    
+                    $('#pagination').remove();
+                    $('#banner').append('<div id="pagination" style="position:absolute;left:230px;"></div>');
+                    getPage(true);
+                  }else {
+                    layer.alert("修改失败");
+                  }
+              })
+
+          });
+      }); 
+      
+     
+    })
+</script>
+</html>

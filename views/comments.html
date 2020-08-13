@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Comments &laquo; Admin</title>
+  <link rel="stylesheet" href="/public/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/public/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/public/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/public/vendors/layui/css/layui.css">
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <script src="/public/vendors/nprogress/nprogress.js"></script>
+</head>
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="main">
+    <nav class="navbar">
+      <button class="btn btn-default navbar-btn fa fa-bars"></button>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/profile"><i class="fa fa-user"></i>个人中心</a></li>
+        <li><a href="/loginOut"><i class="fa fa-sign-out"></i>退出</a></li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="page-title">
+        <h1>所有评论</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <div class="page-action">
+        <!-- show when multiple checked -->
+        <div class="btn-batch" style="display: none">
+          <button class="btn btn-info btn-sm">批量批准</button>
+          <button class="btn btn-warning btn-sm">批量拒绝</button>
+          <button class="btn btn-danger btn-sm">批量删除</button>
+        </div>
+      </div>
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th class="text-center" width="40"><input type="checkbox"></th>
+            <th class="text-center">作者</th>
+            <th class="text-center">评论</th>
+            <th class="text-center">评论在</th>
+            <th class="text-center">提交于</th>
+            <th class="text-center">状态</th>
+            <th class="text-center" width="100">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        </tbody>
+      </table>
+
+      <div id="pagination"></div>
+    </div>
+  </div>
+  <div class="aside">
+    <div class="profile">
+      <img class="avatar" src="{{photo}}">
+      <h3 class="name">{{nickname}}</h3>
+    </div>
+    <ul class="nav">
+      <li>
+        <a href="/"><i class="fa fa-dashboard"></i>仪表盘</a>
+      </li>
+      <li>
+        <a href="#menu-posts" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-posts" class="collapse">
+          <li><a href="/posts">所有文章</a></li>
+          <li><a href="/post-add">写文章</a></li>
+          <li><a href="/categories">分类目录</a></li>
+        </ul>
+      </li>
+      <li class="active">
+        <a href="/comments"><i class="fa fa-comments"></i>评论</a>
+      </li>
+      <li>
+        <a href="/users"><i class="fa fa-users"></i>用户</a>
+      </li>
+      <li>
+        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-settings" class="collapse">
+          <li><a href="/nav-menus">导航菜单</a></li>
+          <li><a href="/slides">图片轮播</a></li>
+          
+        </ul>
+      </li>
+    </ul>
+  </div>
+ 
+
+  <script src="/public/vendors/jquery/jquery-3.5.1.js"></script>
+  <script src="/public/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/public/vendors/jquery/moment.js"></script>
+  <script src="/public/vendors/jquery/jquery.twbsPagination.js"></script>
+  <script src="/public/vendors/layui/layui.all.js"></script>
+  <script>NProgress.done()</script>
+</body>
+<script>
+
+    $(function(){
+    //获取总页数
+      function getPage(){
+        $.get("/getCommentsPage",function(res){
+            renderPage(res.totalPage);
+        });
+      }
+
+      getPage();
+      //映射状态
+      let obj = {
+        held:"保留",
+        rejected:"拒绝",
+        approved:"批准",
+        trashed:"废弃"
+      }
+      //删除
+      $("tbody").on("click",'.del',function(){
+        if(!confirm('确认删除吗')){
+          return;
+        }
+        var _this = $(this);
+        console.log($(this));
+        let id = _this.attr('delId');
+        $.post('/delComment',{id:id},function(res){
+          if(res.code == 200){
+            _this.parents('tr').remove();
+          }
+          layer.msg("删除成功",{icon:1})
+        
+        })  
+      });
+      //渲染表格
+      function renderTbody(data){
+          let tbody = ``;
+          data.forEach(v => {
+              tbody += `
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td class="text-center">${v.author}</td>
+                <td style="width:400px">${v.content}</td>
+                <td class="text-center">《${v.title}》</td>
+                <td class="text-center">${moment(v.created).format("YYYY-MM-DD")}</td>
+                <td class="text-center">${obj[v.status]}</td>
+                <td class="text-center">
+                  <a href="post-add.html" class="btn btn-warning btn-xs">驳回</a>
+                  <a href="javascript:;" delId=${v.comment_id} class="btn del btn-danger btn-xs">删除</a>
+                </td>
+            </tr>`;
+          })
+          return tbody;
+      }
+
+          //分页
+          function renderPage(totalPage){
+              $("#pagination").twbsPagination({
+                  totalPages: totalPage, // 分页的总页数
+                  visiblePages: 5, // 展示的页码数
+                  initiateStartPageClick: true, // 默认单击一次回调函数
+                  first: '第一页',
+                  prev: '上一页',
+                  next: '下一页',
+                  last: '最后一页',
+                  onPageClick: function (event, page) {
+                      //每次点击页码都获取新的数据
+                      $.get("/getCommentsPageData",{page:page},function(res){
+                    
+                        let tHtml = renderTbody(res.data);
+                        $("tbody").html(tHtml);
+                      });
+                  }
+              });
+          }
+    })
+ 
+      
+    
+</script>
+</html>

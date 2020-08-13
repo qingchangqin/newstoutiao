@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Users &laquo; Admin</title>
+  <link rel="stylesheet" href="/public/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/public/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/public/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/public/css/admin.css">
+  <link rel="stylesheet" href="/public/vendors/layui/css/layui.css">
+  <script src="/public/vendors/nprogress/nprogress.js"></script>
+  <style>
+    
+
+    .margin {
+      margin-left: 30px;
+    }
+
+    #editUser{
+      margin-top: 30px;
+    }
+
+
+  </style>
+</head>
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="main">
+    <nav class="navbar">
+      <button class="btn btn-default navbar-btn fa fa-bars"></button>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/profile"><i class="fa fa-user"></i>个人中心</a></li>
+        <li><a href="/loginOut"><i class="fa fa-sign-out"></i>退出</a></li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="page-title">
+        <h1>用户</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <div class="row">
+        <div class="col-md-4">
+          <form id="insert">
+            <h2>添加新用户</h2>
+            <div class="form-group">
+              <input id="photoAss"  name="photoAss" type="hidden">
+              <img id="imgPhoto" class="avatar" src="/public/img/default.png" style="width: 100px;height: 100px;">
+            </div>
+            <div class="form-group">
+              <label for="email">头像</label>
+              <input id="photo" class="form-control" name="photo" type="file" placeholder="头像">
+            </div>
+            <div class="form-group">
+              <label for="email">邮箱</label>
+              <input id="email" class="form-control" name="email" type="email" placeholder="邮箱">
+            </div>
+            <div class="form-group">
+              <label for="nickname">昵称</label>
+              <input id="nickname" class="form-control" name="nickname" type="text" placeholder="昵称">
+            </div>
+            <div class="form-group">
+              <label for="password">密码</label>
+              <input id="password" class="form-control" name="password" type="text" placeholder="密码">
+            </div>
+            <div class="form-group">
+              <button class="btn btn-primary" type="button" id="userSub">添加</button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-8" id="banner">
+          <div class="page-action">
+            <!-- show when multiple checked -->
+            <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+          </div>
+          <table class="table table-striped table-bordered table-hover">
+            <thead>
+               <tr>
+                <th class="text-center" width="40"><input id="checkbox" type="checkbox"></th>
+                <th class="text-center" width="80">头像</th>
+                <th>邮箱</th>
+                <th>昵称</th>
+                <th>状态</th>
+                <th class="text-center" width="100">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td class="text-center"><img class="avatar" src="/public/img/default.png"></td>
+                <td>i@zce.me</td>
+                <td>龙卷风</td>
+                <td>激活</td>
+                <td class="text-center">
+                  <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td class="text-center"><img class="avatar" src="/public/img/default.png"></td>
+                <td>i@zce.me</td>
+                <td>龙卷风</td>
+                <td>激活</td>
+                <td class="text-center">
+                  <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <td class="text-center"><img class="avatar" src="/public/img/default.png"></td>
+                <td>i@zce.me</td>
+                <td>龙卷风</td>
+                <td>激活</td>
+                <td class="text-center">
+                  <a href="post-add.php" class="btn btn-default btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="pagination" style=" position: absolute;left: 230px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="editUser" class="layui-form model-input" style="display: none;">
+    <input type="hidden" name="editId" id="editId">
+    <div class="layui-form-item ">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-inline margin">
+            <input type="text" id="editEmail" name="editEmail" required lay-verify="required" placeholder="请输入分类名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">昵称</label>
+        <div class="layui-input-block right">
+          <input type="text" id="editNickname" name="editNickname" required lay-verify="required" placeholder="请输入分类名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block ">
+            <button class="layui-btn model-sub" lay-submit lay-filter="editUserSub">立即提交</button>
+        </div>
+    </div>
+  </div>
+
+  <div class="aside">
+    <div class="profile">
+      <img class="avatar" src="{{photo}}">
+      <h3 class="name">{{nickname}}</h3>
+    </div>
+    <ul class="nav">
+      <li>
+        <a href="/"><i class="fa fa-dashboard"></i>仪表盘</a>
+      </li>
+      <li>
+        <a href="#menu-posts" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-thumb-tack"></i>文章<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-posts" class="collapse">
+          <li><a href="/posts">所有文章</a></li>
+          <li><a href="/post-add">写文章</a></li>
+          <li><a href="/categories">分类目录</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="/comments"><i class="fa fa-comments"></i>评论</a>
+      </li>
+      <li class="active">
+        <a href="/users"><i class="fa fa-users"></i>用户</a>
+      </li>
+      <li>
+        <a href="#menu-settings" class="collapsed" data-toggle="collapse">
+          <i class="fa fa-cogs"></i>设置<i class="fa fa-angle-right"></i>
+        </a>
+        <ul id="menu-settings" class="collapse">
+          <li><a href="/nav-menus">导航菜单</a></li>
+          <li><a href="/slides">图片轮播</a></li>
+          
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <script src="/public/vendors/jquery/jquery-3.5.1.js"></script>
+  <script src="/public/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/public/vendors/layui/layui.all.js"></script>
+  <script src="/public/vendors/jquery/jquery.twbsPagination.js"></script>
+  <script>NProgress.done()</script>
+</body>
+<script>
+    
+      
+    var tempIndex = 1;
+    $(function(){
+      //将数据拼接到表格中
+      var currentPage = 0;
+      function renderTbody(data){
+        let tbody = ``;
+        var index = 1;
+        console.log(data);
+        let result = {
+          activated:"激活",
+          unactivated:"未激活"
+        }
+        //循环拼接
+        data.forEach((obj)=>{
+            tbody += `
+            <tr>
+                <td class="text-center"><input type="checkbox"></td>
+                <input type="hidden" id="id" value="${obj.user_id}">
+                <td class="text-center"><img class="avatar" style="width:50px;height:50px" src="${obj.photo}"></td>
+                <td id="email">${obj.email}</td>
+                <td id="nickname">${obj.nickname}</td>
+                <td>${result[obj.status]}</td>
+                <td class="text-center">
+                  <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                  <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                </td>
+           </tr>
+          `
+        })
+        return tbody;
+      }
+      //分页
+        function renderPage(totalPage,bool){
+          $("#pagination").twbsPagination({
+              totalPages: totalPage, // 分页的总页数
+              visiblePages: 5, // 展示的页码数
+              initiateStartPageClick: true, // 默认单击一次回调函数
+              first: '第一页',
+              prev: '上一页',
+              next: '下一页',
+              last: '最后一页',
+              onPageClick: function (event, page) {
+                $(".page-item").text();
+                  if(!bool){
+                    currentPage = page;
+                    console.log(currentPage);
+                    renderData(currentPage);
+                  }else {
+                    //每次点击页码都获取新的数据
+                    renderData(currentPage);
+                    //删除所有高亮的页码按钮
+                    $(".page-item").removeClass("active");
+                    bool = false;
+                    let arr = document.querySelectorAll(".page-item");
+                    //重载页面时将当前页码按钮高亮
+                    for(let i = 0;i<arr.length;i++){
+                      if(arr[i].innerText == currentPage){
+                          arr[i].classList.add("active");
+                      }
+                    }
+                  }
+                  
+                 
+              }
+          });
+        }
+      
+      function renderData(page){
+        document.getElementById("checkbox").checked = false;
+          $.get("/getUserPageData",{page:page},function(res){
+            let tHtml = renderTbody(res.data);
+            $("tbody").html(tHtml);
+        });
+      }
+      //获取总页数
+      function getPage(bool){
+        $.get("/getUserPageCount",function(res){
+          renderPage(res.totalPage,bool);
+        });  
+      }
+     
+      getPage(false);
+      //全选按钮
+      $("#checkbox").change(function(){
+          if(this.checked){
+            $("input[type=checkbox]").attr("checked",true);
+          }else{
+            $("input[type=checkbox]").attr("checked",false);
+          }
+      })
+
+      layui.use(['layer',"form"], function(){
+        var layer = layui.layer;
+        var form = layui.form;
+          let editIndex;
+          //  
+          $("tbody").on("click","a",function(){
+            let log =  $(this).html();
+
+            if(log == "编辑"){
+
+              // 获取当前行的数据
+              let tr = $(this).parent().parent();
+              let title = tr.children("#email").html();
+              let content = tr.children("#nickname").html();
+              let id = tr.children("#id").val();
+
+
+              $("#editId").val(id);
+              $("input[name=editEmail]").val(title);
+              $("input[name=editNickname]").val(content);
+              // //打开修改弹框
+              editIndex = layer.open({
+                title: "编辑分类信息",
+                type: 1,
+                content: $("#editUser"),
+                area: ['600px', '300px']
+              })
+            }else{
+              //事件委托绑定删除按钮
+                let tr = $(this).parent().parent();
+                let id = tr.children("#id").val();
+                
+                console.log(id);
+                //发送删除请求
+                $.get("/delUser",{id:id},function(data){
+                    if(data.code == 200){
+                        tr.remove();
+                        layer.msg("删除成功",{icon:1});
+                        $('#pagination').remove();
+                        $('#banner').append('<div id="pagination" style=" position: absolute;left: 230px;"></div>');
+                        getPage(true);
+                    }else {
+                        layer.msg("删除失败",{icon:2});
+                    }
+                });
+            }
+           
+          })
+
+          //监听修改按钮
+          form.on("submit(editUserSub)",function(){
+              var params = {
+                  id: $("#editId").val(),
+                  email: $("input[name=editEmail]").val(),
+                  nickname: $("input[name=editNickname]").val()
+              }
+              //发送请求修改用户
+              $.ajax({
+                  url:"/updUser",
+                  type:"post",
+                  dataType:"json",
+                  contentType:"application/json",
+                  data: JSON.stringify(params) 
+              }).then(data =>{
+                  layer.close(editIndex);
+                  if(data.code == 200){
+                    layer.msg("修改成功",{icon: 1});
+                    
+                    $('#pagination').remove();
+                    $('#banner').append('<div id="pagination" style="position:absolute;left:230px;"></div>');
+                    getPage(true);
+                    console.log(111);
+                  }else {
+                    layer.alert("修改失败");
+                  }
+              })
+
+          });
+      }); 
+      
+      //上传头像
+      $("#photo").change(function(){
+          //判断是否有选择文件
+          if(this.files.length == 0){
+            return;
+          }
+          //获取文件二进制流数据
+          let file = this.files[0];
+          
+          var formData = new FormData();
+
+          formData.append("photo",file);
+
+          $.ajax({
+            url:"/uploadPhoto",
+            data:formData,
+            type:"post",
+            processData: false, // 将数据转换成对象，不对数据做处理，故 processData: false 
+　　　　     contentType: false,    // 不设置数据类型
+          }).then(function(res){
+            $("#imgPhoto").attr("src",res.fullPath);
+            $("#photoAss").val(res.fullPath);
+          })
+      });
+
+
+      //新增用户
+      $("#userSub").click(function(){
+          //序列号表单数据
+          let data = $("#insert").serialize();
+          //禁用按钮
+          $(this).prop("disabled",true).html("保存中。。。");
+          $.post("/addUser",data,function(res){
+              if(res.code == 200){
+                layer.msg("添加成功",{
+                  icon:1,
+                  time:2000
+                });
+              }
+          });
+          //解除禁用
+          $(this).prop("disabled",false).html("添加");
+      })
+    })
+</script>
+</html>
